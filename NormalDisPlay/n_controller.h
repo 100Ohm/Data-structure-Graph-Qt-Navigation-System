@@ -22,14 +22,15 @@ public:
     void kNumChange(int n);
     //绘制地图
     void onDraw(DisplayVex vexs[], DisplayEdge edges[], int v, int e);
-    //拥塞系数的值改变
-    void onChangeK(const float new_k[]);
     //道路和地点信息,显示在下面
     void onVexNameChange(const QStringList strList);
+    //计时器通知
+    void onTimer();
 private:
     NormalDisPlay *view = NULL;
     NormalModel *model = NULL;
-    int kNum;
+    int kNum = 0;
+    float k[MAX_VEX_NUM];
 };
 
 #endif // N_CONTROLLER_H

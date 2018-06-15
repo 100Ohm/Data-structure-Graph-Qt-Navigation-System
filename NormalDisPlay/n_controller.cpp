@@ -1,8 +1,11 @@
 #include "n_controller.h"
 #include "n_model.h"
+#include <QDebug>
+#include <QTime>
 
 N_Controller::N_Controller(NormalDisPlay *view)
 {
+    qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
     this->view = view;
     this->view->setNormalControll(this);
     this->model = new N_Model(this);
@@ -28,12 +31,18 @@ void N_Controller::kNumChange(int n){
 
 void N_Controller::onDraw(DisplayVex vexs[], DisplayEdge edges[], int v, int e){
     this->view->onDraw(vexs, edges, v, e);
-}
-
-void N_Controller::onChangeK(const float new_k[]){
-    this->view->onChangeK(new_k);
+    this->kNum = v;
 }
 
 void N_Controller::onVexNameChange(const QStringList strList){
     this->view->onVexNameChange(strList);
+}
+
+void N_Controller::onTimer(){
+    if(kNum == 0)
+        return;
+    for(int n = 0; n < this->kNum; n++){
+        this->k[n] = (float)((int)qrand() %100)/100.0;
+    }
+    this->view->onChangeK(this->k);
 }

@@ -25,5 +25,6 @@ DESTDIR = ../bin
 
 win32{
 LIBS += ../bin/AppStandard.dll \
-    ../bin/NormalDisPlay.dll
+    ../bin/NormalDisPlay.dll \
+    ../bin/FindRoadDisplay.dll
 }

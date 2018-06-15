@@ -5,7 +5,6 @@
 #include "normalmodel.h"
 #include "normalcontroller.h"
 
-#include <QSqlDatabase>
 
 class NORMALDISPLAYSHARED_EXPORT N_Model
         :public NormalModel

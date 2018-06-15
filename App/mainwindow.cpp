@@ -3,6 +3,9 @@
 #include <QCompleter>
 #include <QPainter>
 #include <QMouseEvent>
+#include <QDebug>
+#include <QTimer>
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -15,6 +18,12 @@ MainWindow::MainWindow(QWidget *parent) :
     initColor();
     //初始化选项框的选项
     initComboBoxItem();
+
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(mytimer()));
+    timer->start(10000);
+
+    onShowTML("无","无","无");
 }
 
 MainWindow::~MainWindow()
@@ -23,11 +32,19 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::onDraw(DisplayVex vexs[], DisplayEdge edges[], int v, int e){
+    //录入数据
     for(int n = 0; n < v; n ++){
-        this->vexs[n] = vexs[n];
+        this->vexs[n].id = vexs[n].id;
+        this->vexs[n].name = vexs[n].name;
+        this->vexs[n].p = vexs[n].p;
     }
     for(int i = 0; i < e; i ++){
-         this->edges[i] = edges[i];
+        this->edges[i].id = edges[i].id;
+        this->edges[i].isHightWay = edges[i].isHightWay;
+        this->edges[i].k = edges[i].k;
+        this->edges[i].length = edges[i].length;
+        this->edges[i].vex1 = edges[i].vex1;
+        this->edges[i].vex2 = edges[i].vex2;
     }
     this->vNum = v;
     this->eNum = e;
@@ -100,16 +117,14 @@ void  MainWindow::paintEvent(QPaintEvent* event)
 
 void MainWindow::mousePressEvent(QMouseEvent *event){//鼠标按下事件
     QPoint pos = event->pos();
-    int choosedVex = -1;
     for(int i = 0; i < this->vNum; i++){
         int dx = pos.x() - this->vexs[i].p.x();
         int dy = pos.y() - this->vexs[i].p.y();
         int dist = sqrt(dx*dx+dy*dy);
         if(dist < 12){
-            choosedVex = i;
-            QString str = this->n_ctrl->vexToString(choosedVex);
+            QString str = this->n_ctrl->vexToString(vexs[i].id);
             ui->statusBar->showMessage(str,2000);
-            ui->lineEdit_2->setText(this->vexs[choosedVex].name);
+            ui->lineEdit_2->setText(this->vexs[i].name);
             break;
         }
     }
@@ -254,4 +269,45 @@ void MainWindow::on_comboBox_activated(const QString &arg1)
         ui->comboBox_2->addItem("经过道路最少");
         this->comboItemNum = 3;
     }
+}
+
+void MainWindow::mytimer(){
+    this->n_ctrl->onTimer();
+}
+
+void MainWindow::on_comboBox_2_activated(const QString &arg1)
+{//当出行方式完成完成选择之后
+    if(ui->lineEdit_2->text() == "")
+        return;
+    else{//发出寻路请求
+        //qDebug() << ui->label_2->text() << ui->lineEdit_2->text() << ui->comboBox->currentText() << arg1 << endl;
+        this->f_ctrl->FindRoad(ui->label_2->text(),ui->lineEdit_2->text(),ui->comboBox->currentText(),arg1,
+                               this->vexs, this->edges, this->vNum, this->eNum);
+        //this->findRoad->findARoad(ui->label_2->text(),ui->lineEdit_2->text(),ui->comboBox->currentText(),arg1);
+    }
+}
+
+void MainWindow::onShowRoad(DisplayVex vexs[],DisplayEdge edge[]){
+    for(int n = 0; n < vNum; n ++){
+        this->vexs[n].color = vexs[n].color;
+    }
+    for(int i = 0; i < eNum; i ++){
+         this->edges[i].color = edge[i].color;
+    }
+    update();//刷新,会调用paintEvent()函数
+}
+
+void MainWindow::setFindRoadController(FindRoadController *fc){
+    this->f_ctrl = fc;
+}
+
+void MainWindow::onShowTML(QString time, QString money, QString light){
+    ui->label_20->setText(time);
+    ui->label_21->setText(money);
+    ui->label_22->setText(light);
+}
+
+void MainWindow::on_pushButton_clicked()
+{//未完成
+    on_comboBox_2_activated(ui->comboBox_2->currentText());
 }

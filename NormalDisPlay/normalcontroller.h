@@ -11,8 +11,6 @@ public:
     //面向model
     //绘制地图
     virtual void onDraw(DisplayVex vexs[], DisplayEdge edges[], int v, int e) = 0;
-    //拥塞系数的值改变
-    virtual void onChangeK(const float new_k[]) = 0;
     //道路和地点信息,显示在下面
     virtual void onVexNameChange(const QStringList strList) = 0;
 
@@ -21,14 +19,14 @@ public:
     virtual void loadDisplayData() = 0;
     //获取某一个地点的语言描述
     virtual QString vexToString(int vNum) = 0;
+    //view里面计时器跳动时通知controller
+    virtual void onTimer() = 0;
 
     //面向View或Model
     //需要堵塞系数的个数改变
     virtual void kNumChange(int n) = 0;
 
     NormalController();
-private:
-    float k[MAX_VEX_NUM];
 };
 
 #endif // NORMALCONTROLLER_H
