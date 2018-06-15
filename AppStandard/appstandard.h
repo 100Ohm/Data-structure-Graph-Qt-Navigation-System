@@ -17,6 +17,7 @@
 static QString databaseName = "myGraph.db";//数据库名称
 
 class APPSTANDARDSHARED_EXPORT AppStandard
-{};
+{
+};
 
 #endif // APPSTANDARD_H

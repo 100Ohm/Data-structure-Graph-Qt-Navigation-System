@@ -23,6 +23,7 @@ private:
     FindRoadModel *model = NULL;
     int vNum, eNum;
     int wayAndPlan = 0;
+    void myFindRoad(DisplayVex vexs[],DisplayEdge edge[], int st, int ed);
 };
 
 #endif // F_CONTROLLER_H

@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(mytimer()));
-    timer->start(10000);
+    timer->start(5000);
 
     onShowTML("无","无","无");
 }
@@ -140,15 +140,15 @@ QColor MainWindow::getRoadColor(int color, float k){
     int green = 0;
     int blue = 0;
     switch(color){
-    case EDGE_COLOR_0:
-        red = (int)((1 - k) * 255);
-        green = (int)(k * 128);
-        blue = (int)(k * 128);
+    case EDGE_COLOR_0://204.204.153不堵-156.79.79堵
+        red =  (int)(k * 48 + 156);
+        green = (int)(k * 125 + 79);
+        blue = (int)(k * 74 + 79);
         break;
     case EDGE_COLOR_1:
-        red = (int)(128 + (1 - k) * 127);
-        green = (int)(k * 128);
-        blue = (int)(128 + (1 - k) * 127);
+        red = (int)((1 - k) * 255);
+        green = (int)(k * 102);
+        blue = (int)(k * 102);
         break;
     default:
         break;
@@ -158,18 +158,18 @@ QColor MainWindow::getRoadColor(int color, float k){
 
 void MainWindow::initColor(){
     //颜色们
-    //普通点102.102.245
-    brush[0].setRed(61);
-    brush[0].setGreen(102);
-    brush[0].setBlue(204);
-    //起点终点255.51.102
-    brush[1].setRed(255);
-    brush[1].setGreen(51);
-    brush[1].setBlue(102);
-    //路上的点255.51.204
+    //普通点153.179.204
+    brush[0].setRed(153);
+    brush[0].setGreen(179);
+    brush[0].setBlue(214);
+    //起点终点235.0.78
+    brush[1].setRed(235);
+    brush[1].setGreen(0);
+    brush[1].setBlue(78);
+    //路上的点255.204.51
     brush[2].setRed(255);
-    brush[2].setGreen(51);
-    brush[2].setBlue(204);
+    brush[2].setGreen(204);
+    brush[2].setBlue(51);
     //查询信息获得的点255.204.51
     brush[3].setRed(255);
     brush[3].setGreen(204);
@@ -238,6 +238,7 @@ void MainWindow::on_pushButton_3_clicked()
          if(lineEditText == this->vexs[n].name){
              ui->lineEdit_2->setText(lineEditText);
              ui->statusBar->showMessage("已找到该地点,在右方可以开始导航",2000);
+             on_comboBox_2_activated(ui->comboBox_2->currentText());//查找的时候也直接查询路了
              return;
          }
      }
@@ -269,6 +270,7 @@ void MainWindow::on_comboBox_activated(const QString &arg1)
         ui->comboBox_2->addItem("经过道路最少");
         this->comboItemNum = 3;
     }
+    on_comboBox_2_activated(ui->comboBox_2->currentText());//点选这两个框都会计算路线
 }
 
 void MainWindow::mytimer(){
@@ -280,10 +282,9 @@ void MainWindow::on_comboBox_2_activated(const QString &arg1)
     if(ui->lineEdit_2->text() == "")
         return;
     else{//发出寻路请求
-        //qDebug() << ui->label_2->text() << ui->lineEdit_2->text() << ui->comboBox->currentText() << arg1 << endl;
-        this->f_ctrl->FindRoad(ui->label_2->text(),ui->lineEdit_2->text(),ui->comboBox->currentText(),arg1,
+        this->f_ctrl->FindRoad(ui->label_2->text(),ui->lineEdit_2->text(),
+                               ui->comboBox->currentText(),arg1,
                                this->vexs, this->edges, this->vNum, this->eNum);
-        //this->findRoad->findARoad(ui->label_2->text(),ui->lineEdit_2->text(),ui->comboBox->currentText(),arg1);
     }
 }
 
@@ -305,6 +306,13 @@ void MainWindow::onShowTML(QString time, QString money, QString light){
     ui->label_20->setText(time);
     ui->label_21->setText(money);
     ui->label_22->setText(light);
+    if(time == "请驾车"){
+        ui->statusBar->showMessage("行人不可通过高速路,请选择驾车",2000);
+    }
+    if(time == "堵车太严重了"){
+        ui->statusBar->showMessage("堵车太严重了,换条路试试",2000);
+    }
+
 }
 
 void MainWindow::on_pushButton_clicked()

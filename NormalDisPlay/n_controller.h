@@ -30,7 +30,7 @@ private:
     NormalDisPlay *view = NULL;
     NormalModel *model = NULL;
     int kNum = 0;
-    float k[MAX_VEX_NUM];
+    float k[MAX_EDGE_NUM];
 };
 
 #endif // N_CONTROLLER_H

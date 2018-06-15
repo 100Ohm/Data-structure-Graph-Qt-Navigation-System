@@ -9,11 +9,6 @@
 N_Model::N_Model(NormalController *c)
 {
     this->c = c;
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName(databaseName);
-    if (!db.open()) {
-        qDebug() << "Unable to establish a database connection." << endl;
-    }
 }
 
 void N_Model::loadDisplayData(){

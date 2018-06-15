@@ -1,10 +1,10 @@
 #ifndef FINDROADCONTROLLER_H
 #define FINDROADCONTROLLER_H
 #include "findroaddisplay_global.h"
+#include "f_edge.h"
 #include "../AppStandard/appstandard.h"
 #include "../AppStandard/displayedge.h"
 #include "../AppStandard/displayvex.h"
-#include "f_edge.h"
 
 class FINDROADDISPLAYSHARED_EXPORT FindRoadController
 {
@@ -15,7 +15,6 @@ public:
             DisplayVex vexs[],DisplayEdge edge[], int v, int e) = 0;
 
     //面向Model
-    //virtual void roadInfo(F_Edge edges[], int e) = 0;
 
     FindRoadController();
 };

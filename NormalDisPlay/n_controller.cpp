@@ -31,7 +31,7 @@ void N_Controller::kNumChange(int n){
 
 void N_Controller::onDraw(DisplayVex vexs[], DisplayEdge edges[], int v, int e){
     this->view->onDraw(vexs, edges, v, e);
-    this->kNum = v;
+    this->kNum = e;
 }
 
 void N_Controller::onVexNameChange(const QStringList strList){

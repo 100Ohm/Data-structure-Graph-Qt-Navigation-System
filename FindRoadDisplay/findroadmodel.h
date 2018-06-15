@@ -11,7 +11,9 @@ class FINDROADDISPLAYSHARED_EXPORT FindRoadModel
 public:
     FindRoadModel();
     //获取一组边的信息
-    //virtual void getRoadInfo(DisplayEdge edges[], int e) = 0;
+    virtual F_Edge* getRoadInfo(int eNum) = 0;
+    //加载一条边的数据
+    virtual F_Edge loadARoad(int id) = 0;
 };
 
 #endif // FINDROADMODEL_H

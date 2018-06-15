@@ -12,10 +12,10 @@ class FINDROADDISPLAYSHARED_EXPORT F_Model : public FindRoadModel
 public:
     F_Model(FindRoadController *c);
     //实现接口
-    //void getRoadInfo(DisplayEdge edges[], int e);
+    F_Edge* getRoadInfo(int eNum);
+    F_Edge loadARoad(int id);//加载一条边的数据
 private:
     FindRoadController *c = NULL;
-    F_Edge loadARoad(int id);//加载一条边的数据
 };
 
 #endif // F_MODEL_H
