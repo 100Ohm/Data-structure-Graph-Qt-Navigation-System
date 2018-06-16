@@ -30,3 +30,7 @@
 ![readme_2](readme_2.png)
 
 ![](readme_3.png)
+
+github地址:https://github.com/100Ohm/Data-structure-Graph-Qt-Navigation-System
+
+gitee地址:https://gitee.com/one_hundred_ohms/qt_line_navigation_system
