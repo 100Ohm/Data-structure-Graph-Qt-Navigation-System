@@ -1,14 +1,15 @@
 #ifndef F_EDGE_H
 #define F_EDGE_H
 
-#define BYCAR         0b00000001
-#define WALK          0b00000010
-#define DISTANCE  0b00000100
-#define TIME          0b00001000
-#define ROAD          0b00010000
-#define MONEY       0b00100000
-#define HIGHTWAY 0b01000000
-#define NORMAL      0b10000000
+//定义一些十六进制的编码
+#define BYCAR         0x1
+#define WALK          0x2
+#define DISTANCE  0x4
+#define TIME          0x8
+#define ROAD          0x10
+#define MONEY       0x20
+#define HIGHTWAY 0x40
+#define NORMAL      0x80
 
 #define WALK_SPEED 5
 

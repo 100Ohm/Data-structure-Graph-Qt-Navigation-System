@@ -4,4 +4,4 @@ SUBDIRS += \
     AppStandard \
     NormalDisPlay \
     FindRoadDisplay \
-    App
+    App 

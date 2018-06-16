@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QSqlRelationalDelegate>
 #include <QCompleter>
 #include <QPainter>
 #include <QMouseEvent>
@@ -13,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     //设置窗口透明度
-    setWindowOpacity(1.0);
+    setWindowOpacity(0.9);
     //初始化画地点的颜色数组
     initColor();
     //初始化选项框的选项
@@ -24,11 +25,28 @@ MainWindow::MainWindow(QWidget *parent) :
     timer->start(5000);
 
     onShowTML("无","无","无");
+
+    //设置下面的列表框
+    tablemodel = new QSqlRelationalTableModel(this);
+    tablemodel->setTable("vex");
+    tablemodel->select();
+    tablemodel->removeColumn(4);
+    tablemodel->removeColumn(3);
+    tablemodel->removeColumn(2);
+    tablemodel->removeColumn(0);
+    tablemodel->setHeaderData(0, Qt::Horizontal, QObject::tr("地点名称"));
+    tablemodel->setHeaderData(1, Qt::Horizontal, QObject::tr("地点类型"));
+    ui->tableView->setModel(tablemodel);
+//    QTableView *view = new QTableView(this);
+//    view->setModel(model);
+//    setCentralWidget(view);
+//    view->setItemDelegate(new QSqlRelationalDelegate(view));
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete tablemodel;
 }
 
 void MainWindow::onDraw(DisplayVex vexs[], DisplayEdge edges[], int v, int e){
@@ -123,7 +141,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event){//鼠标按下事件
         int dist = sqrt(dx*dx+dy*dy);
         if(dist < 12){
             QString str = this->n_ctrl->vexToString(vexs[i].id);
-            ui->statusBar->showMessage(str,2000);
+            ui->statusBar->showMessage(str,2000);//显示信息
             ui->lineEdit_2->setText(this->vexs[i].name);
             break;
         }
@@ -147,8 +165,8 @@ QColor MainWindow::getRoadColor(int color, float k){
         break;
     case EDGE_COLOR_1:
         red = (int)((1 - k) * 255);
-        green = (int)(k * 102);
-        blue = (int)(k * 102);
+        green = (int)(k * 64);
+        blue = (int)(k * 64);
         break;
     default:
         break;
@@ -236,13 +254,33 @@ void MainWindow::on_pushButton_3_clicked()
      QString lineEditText = ui->lineEdit_1->text();
      for(int n = 0; n < vNum; n ++){
          if(lineEditText == this->vexs[n].name){
+             QString find = "已找到\"";
              ui->lineEdit_2->setText(lineEditText);
-             ui->statusBar->showMessage("已找到该地点,在右方可以开始导航",2000);
-             on_comboBox_2_activated(ui->comboBox_2->currentText());//查找的时候也直接查询路了
+             ui->statusBar->showMessage(find.append(lineEditText).append("\", 在右方可以开始导航"),2000);
+             on_comboBox_2_activated(ui->comboBox_2->currentText());//查找的时候也直接计算路了
+             tablemodel->setTable("vex");//改变一下右下角的列表
+             tablemodel->setFilter(QString("vexName = '%1'").arg(lineEditText));
+             tablemodel->select();
+             tablemodel->removeColumn(4);
+             tablemodel->removeColumn(3);
+             tablemodel->removeColumn(2);
+             tablemodel->removeColumn(0);
+             tablemodel->setHeaderData(0, Qt::Horizontal, QObject::tr("地点名称"));
+             tablemodel->setHeaderData(1, Qt::Horizontal, QObject::tr("地点类型"));
+             ui->lineEdit_1->clear();//清空输入框
              return;
          }
      }
-     ui->statusBar->showMessage("没找到该地点",2000);
+     tablemodel->setTable("vex");//改变一下右下角的列表(显示全部点)
+     tablemodel->select();
+     tablemodel->removeColumn(4);
+     tablemodel->removeColumn(3);
+     tablemodel->removeColumn(2);
+     tablemodel->removeColumn(0);
+     tablemodel->setHeaderData(0, Qt::Horizontal, QObject::tr("地点名称"));
+     tablemodel->setHeaderData(1, Qt::Horizontal, QObject::tr("地点类型"));
+     ui->lineEdit_1->clear();//清空输入框
+     ui->statusBar->showMessage(lineEditText.append("? 没找到该地点"),2000);
 
 }
 
@@ -310,12 +348,170 @@ void MainWindow::onShowTML(QString time, QString money, QString light){
         ui->statusBar->showMessage("行人不可通过高速路,请选择驾车",2000);
     }
     if(time == "堵车太严重了"){
-        ui->statusBar->showMessage("堵车太严重了,换条路试试",2000);
+        ui->statusBar->showMessage("堵车太严重了,根本走不动,换条路试试",2000);
     }
 
 }
 
 void MainWindow::on_pushButton_clicked()
-{//未完成
+{//开始导航按钮
     on_comboBox_2_activated(ui->comboBox_2->currentText());
+}
+
+void MainWindow::on_lineEdit_2_returnPressed()
+{//小文本框按回车的响应
+    on_comboBox_2_activated(ui->comboBox_2->currentText());
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{//美食,设置请求码
+    int dis = 0, score = 0, money = 0;
+    if(ui->comboBox_3->currentText() == "不限制"){
+        dis = 0;
+    } else if(ui->comboBox_3->currentText() == "5km以内"){
+        dis = 5;
+    } else if(ui->comboBox_3->currentText() == "5km-10km"){
+        dis = 6;
+    } else if(ui->comboBox_3->currentText() == "10km以上"){
+        dis = 10;
+    }
+
+    if(ui->comboBox_4->currentText() == "不限制"){
+        score = 0;
+    } else if(ui->comboBox_4->currentText() == "5星及以上"){
+        score = 5;
+    } else if(ui->comboBox_4->currentText() == "4星及以上"){
+        score = 4;
+    } else if(ui->comboBox_4->currentText() == "3星及以上"){
+        score = 3;
+    }
+
+    if(ui->comboBox_5->currentText() == "不限制"){
+        money = 0;
+    } else if(ui->comboBox_5->currentText() == "50元及以下"){
+        money = 50;
+    } else if(ui->comboBox_5->currentText() == "50-100元"){
+        money = 51;
+    } else if(ui->comboBox_5->currentText() == "100元以上"){
+        money = 100;
+    }
+    searchFood(dis,score,money);
+}
+
+void MainWindow::on_pushButton_4_clicked()
+{//超市,设置请求码
+    int dis = 0, score = 0;
+    bool open = true;
+    if(ui->comboBox_6->currentText() == "不限制"){
+        dis = 0;
+    } else if(ui->comboBox_6->currentText() == "5km以内"){
+        dis = 5;
+    } else if(ui->comboBox_6->currentText() == "5km-10km"){
+        dis = 6;
+    } else if(ui->comboBox_6->currentText() == "10km以上"){
+        dis = 10;
+    }
+
+    if(ui->comboBox_7->currentText() == "不限制"){
+        score = 0;
+    } else if(ui->comboBox_7->currentText() == "5星及以上"){
+        score = 5;
+    } else if(ui->comboBox_7->currentText() == "4星及以上"){
+        score = 4;
+    } else if(ui->comboBox_7->currentText() == "3星及以上"){
+        score = 3;
+    }
+
+    if(ui->checkBox->isChecked()){
+        open = true;
+    } else{
+        open = false;
+    }
+    searchSupermarket(dis,score,open);
+}
+
+void MainWindow::on_pushButton_6_clicked()
+{//酒店,设置请求码
+    int dis = 0, score = 0, money = 0;
+    if(ui->comboBox_8->currentText() == "不限制"){
+        dis = 0;
+    } else if(ui->comboBox_8->currentText() == "5km以内"){
+        dis = 5;
+    } else if(ui->comboBox_8->currentText() == "5km-10km"){
+        dis = 6;
+    } else if(ui->comboBox_8->currentText() == "10km以上"){
+        dis = 10;
+    }
+    if(ui->comboBox_9->currentText() == "不限制"){
+        score = 0;
+    } else if(ui->comboBox_9->currentText() == "5星及以上"){
+        score = 5;
+    } else if(ui->comboBox_9->currentText() == "4星及以上"){
+        score = 4;
+    } else if(ui->comboBox_9->currentText() == "3星及以上"){
+        score = 3;
+    }
+
+    if(ui->comboBox_10->currentText() == "不限制"){
+        money = 0;
+    } else if(ui->comboBox_10->currentText() == "500元及以下"){
+        money = 500;
+    } else if(ui->comboBox_10->currentText() == "500-1000元"){
+        money = 501;
+    } else if(ui->comboBox_10->currentText() == "1000元以上"){
+        money = 1000;
+    }
+    searchHotel(dis,score,money);
+}
+
+void MainWindow::searchFood(int dis, int score, int money){
+
+    tablemodel->setTable("food");
+    tablemodel->setRelation(1, QSqlRelation("vex", "id", "vexName"));
+    tablemodel->select();
+    tablemodel->removeColumn(0);
+    tablemodel->setHeaderData(0, Qt::Horizontal, QObject::tr("美食店名称"));
+    tablemodel->setHeaderData(1, Qt::Horizontal, QObject::tr("用户评分"));
+    tablemodel->setHeaderData(2, Qt::Horizontal, QObject::tr("人均消费(元)"));
+    tablemodel->setHeaderData(3, Qt::Horizontal, QObject::tr("用户评价"));
+    float *allRoad = this->f_ctrl->FindAllRoad(ui->label_2->text(),vexs,edges,vNum,eNum);
+    for(int n = 0; n < vNum; n ++){
+        qDebug() << allRoad[n];
+    }
+    free(allRoad);
+}
+
+void MainWindow::searchSupermarket(int dis, int score, bool open){
+
+    tablemodel->setTable("supermarket");
+    tablemodel->setRelation(1, QSqlRelation("vex", "id", "vexName"));
+    tablemodel->select();
+    tablemodel->removeColumn(0);
+    tablemodel->setHeaderData(0, Qt::Horizontal, QObject::tr("超市名称"));
+    tablemodel->setHeaderData(1, Qt::Horizontal, QObject::tr("用户评分"));
+    tablemodel->setHeaderData(2, Qt::Horizontal, QObject::tr("开店时间"));
+    tablemodel->setHeaderData(3, Qt::Horizontal, QObject::tr("关店时间"));
+    tablemodel->setHeaderData(4, Qt::Horizontal, QObject::tr("用户评价"));
+    float *allRoad = this->f_ctrl->FindAllRoad(ui->label_2->text(),vexs,edges,vNum,eNum);
+    for(int n = 0; n < vNum; n ++){
+        qDebug() << allRoad[n];
+    }
+    free(allRoad);
+}
+
+void MainWindow::searchHotel(int dis, int score, int money){
+
+    tablemodel->setTable("hotel");
+    tablemodel->setRelation(1, QSqlRelation("vex", "id", "vexName"));
+    tablemodel->select();
+    tablemodel->removeColumn(0);
+    tablemodel->setHeaderData(0, Qt::Horizontal, QObject::tr("酒店名称"));
+    tablemodel->setHeaderData(1, Qt::Horizontal, QObject::tr("用户评分"));
+    tablemodel->setHeaderData(2, Qt::Horizontal, QObject::tr("住店价格(天)"));
+    tablemodel->setHeaderData(3, Qt::Horizontal, QObject::tr("用户评价"));
+    float *allRoad = this->f_ctrl->FindAllRoad(ui->label_2->text(),vexs,edges,vNum,eNum);
+    for(int n = 0; n < vNum; n ++){
+        qDebug() << allRoad[n];
+    }
+    free(allRoad);
 }

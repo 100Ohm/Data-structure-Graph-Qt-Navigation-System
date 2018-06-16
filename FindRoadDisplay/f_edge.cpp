@@ -1,5 +1,4 @@
 #include "f_edge.h"
-#include <QDebug>
 
 F_Edge::F_Edge()
 {
@@ -22,7 +21,6 @@ float F_Edge::getweigth(int ask){
     if((ask&DISTANCE) == DISTANCE){
         distance();
     }else if((ask&TIME) == TIME){
-        qDebug() << this->time;
         gettime();
     }else if((ask&ROAD) == ROAD){
         road();
@@ -49,7 +47,13 @@ void F_Edge::road(){
 }
 
 void F_Edge::getmoney(){
-    this->weigth = (float)this->money;
+    //我改了一下,权值不应该用金钱,
+    //因为同样价格的路很多条,我要让它选择最短那条
+    if(this->money == 0){
+        this->weigth = (float)1.0;
+    } else {
+        this->weigth = (float)(this->money * 100);
+    }
 }
 
 void F_Edge::highway(){

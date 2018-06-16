@@ -18,12 +18,16 @@ public:
     //实现接口
     void FindRoad(QString st, QString ed, QString way, QString plan,
             DisplayVex vexs[],DisplayEdge edge[], int v, int e) ;
+    float* FindAllRoad(QString st, DisplayVex vexs[],DisplayEdge edge[], int v, int e);
 private:
     FindRoadDisplay *view = NULL;
     FindRoadModel *model = NULL;
     int vNum, eNum;
     int wayAndPlan = 0;
-    void myFindRoad(DisplayVex vexs[],DisplayEdge edge[], int st, int ed);
+    bool isFindAllRoad = false;//是否查找所有道路
+    float* analyze(QString st, QString ed, QString way, QString plan,
+            DisplayVex vexs[],DisplayEdge edge[], int v, int e) ;
+    float* myFindRoad(DisplayVex vexs[],DisplayEdge edge[], int st, int ed);
 };
 
 #endif // F_CONTROLLER_H

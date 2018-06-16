@@ -15,6 +15,23 @@ F_Controller::~F_Controller(){
 
 void F_Controller::FindRoad(QString st, QString ed, QString way, QString plan,
         DisplayVex vexs[],DisplayEdge edge[], int v, int e) {//做一些准备工作
+    isFindAllRoad = false;
+    float *allRoad = analyze(st, ed, way, plan, vexs, edge, v, e);
+    free(allRoad);
+}
+
+float* F_Controller::FindAllRoad(QString st, DisplayVex vexs[],DisplayEdge edge[], int v, int e){
+    isFindAllRoad = true;
+    if(st == "君子兰桥"){
+        return analyze(st, "桂花宾馆", "驾车", "距离最短", vexs, edge, v, e);
+    } else {
+        return analyze(st, "君子兰桥", "驾车", "距离最短", vexs, edge, v, e);
+    }
+}
+
+float* F_Controller::analyze(QString st, QString ed, QString way, QString plan,
+        DisplayVex vexs[],DisplayEdge edge[], int v, int e){//做一些准备工作
+    float *allRoad;
     int start, end;
     bool error = false;
     if(st != ed) {
@@ -30,7 +47,11 @@ void F_Controller::FindRoad(QString st, QString ed, QString way, QString plan,
         error = true;
     }
     if(error){//如果名字异常
-        return;
+        allRoad = (float *) malloc(v * sizeof(float));
+        for(int n = 0; n < v; n ++){
+            allRoad[n] = INF;
+        }
+        return allRoad;
     }
     this->vNum = v;
     this->eNum = e;
@@ -52,11 +73,12 @@ void F_Controller::FindRoad(QString st, QString ed, QString way, QString plan,
         wayAndPlan = wayAndPlan|HIGHTWAY;
     else if(plan == "非高速优先")
         wayAndPlan = wayAndPlan|NORMAL;
-    this->myFindRoad(vexs,edge,start,end);
+    return this->myFindRoad(vexs,edge,start,end);
 }
 
-void F_Controller::myFindRoad(DisplayVex vexs[],DisplayEdge edge[], int st, int ed){
+float* F_Controller::myFindRoad(DisplayVex vexs[],DisplayEdge edge[], int st, int ed){
     F_Edge *fe;
+    float *allRoad;
     Graph myGraph;//定义一个图
     myGraph.vNum = this->vNum;
     //先把道路们的信息加载到F_Edge数组里
@@ -66,45 +88,60 @@ void F_Controller::myFindRoad(DisplayVex vexs[],DisplayEdge edge[], int st, int 
         fe[n].getweigth(this->wayAndPlan);//用请求码获取每一条路的权值
         myGraph.edges[edge[n].vex1][edge[n].vex2] = fe[n].weigth;//把权重信息传给图对象
         myGraph.edges[edge[n].vex2][edge[n].vex1] = fe[n].weigth;
-        edge[n].color = EDGE_COLOR_0;//重置边的颜色
+        if(!isFindAllRoad)
+            edge[n].color = EDGE_COLOR_0;//重置边的颜色
     }
-    for(int n = 0; n < this->vNum; n ++){//将顶点颜色重置
-        if(vexs[n].color != VEX_COLOR_3){//不能熄灭查询信息的点
-            vexs[n].color = VEX_COLOR_0;
+    if(!isFindAllRoad){
+        for(int n = 0; n < this->vNum; n ++){//将顶点颜色重置
+            if(vexs[n].color != VEX_COLOR_3){//不能熄灭查询信息的点
+                vexs[n].color = VEX_COLOR_0;
+            }
         }
     }
     int mymoney = 0,mylights = 0;
     float mytime = 0.0;
     if(!myGraph.getWay(st,ed)){
-        this->view->onShowTML("请驾车","请驾车","请驾车");
+        if(!isFindAllRoad)
+            this->view->onShowTML("请驾车","请驾车","请驾车");
     } else {
-        int pre = ed, now = ed;
-        pre = myGraph.way[ed];
-        while(now != st){//点亮中间顶点
-            vexs[pre].color = VEX_COLOR_2;
-            for(int n = 0; n < eNum; n++){
-                if((edge[n].vex1 == pre && edge[n].vex2 == now)
-                        || (edge[n].vex2 == pre && edge[n].vex1 == now)){
-                    edge[n].color = EDGE_COLOR_1;
-                    mytime += fe[n].time;
-                    mymoney += fe[n].money;
-                    mylights += fe[n].light;
+        if(!isFindAllRoad){
+            int pre = ed, now = ed;
+            pre = myGraph.way[ed];
+            while(now != st){//点亮中间顶点
+                vexs[pre].color = VEX_COLOR_2;
+                for(int n = 0; n < eNum; n++){
+                    if((edge[n].vex1 == pre && edge[n].vex2 == now)
+                            || (edge[n].vex2 == pre && edge[n].vex1 == now)){
+                        edge[n].color = EDGE_COLOR_1;
+                        mytime += fe[n].time;
+                        mymoney += fe[n].money;
+                        mylights += fe[n].light;
+                    }
                 }
+                now = pre;
+                pre = myGraph.way[pre];
             }
-            now = pre;
-            pre = myGraph.way[pre];
+            QString timeInfo = QString::number(mytime,'g',4).append("分钟");
+            if(mytime == 1.0/0.0){
+                timeInfo = "堵车太严重了";
+            }
+            this->view->onShowTML(timeInfo,
+                                  QString("%1").arg(mymoney).append("元"),
+                                  QString("%1").arg(mylights).append("个"));
         }
-        QString timeInfo = QString::number(mytime,'g',4).append("分钟");
-        if(mytime == 1.0/0.0){
-            timeInfo = "堵车太严重了";
+    }
+    if(isFindAllRoad){//返回全部路径
+        allRoad = (float *) malloc(vNum * sizeof(float));
+        for(int n = 0; n < vNum; n++){
+            allRoad[n] = myGraph.allDistance[n];
+            //qDebug() << myGraph.allDistance[n];
         }
-        this->view->onShowTML(timeInfo,
-                              QString("%1").arg(mymoney).append("元"),
-                              QString("%1").arg(mylights).append("个"));
+        return allRoad;
     }
     //点亮起点终点
     vexs[st].color = VEX_COLOR_1;
     vexs[ed].color = VEX_COLOR_1;
     this->view->onShowRoad(vexs,edge);
     free(fe);
+    return allRoad;
 }

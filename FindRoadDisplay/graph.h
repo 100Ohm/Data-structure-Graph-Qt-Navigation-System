@@ -10,6 +10,7 @@ public:
     int vNum = 0;
     float edges[MAX_VEX_NUM][MAX_VEX_NUM];
     int way[MAX_VEX_NUM];//储存最短路径各点下标
+    float allDistance[MAX_VEX_NUM];//储存距离
     Graph();
     bool getWay(int start, int end);
 };
