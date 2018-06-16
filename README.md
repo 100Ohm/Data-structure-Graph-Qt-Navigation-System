@@ -25,9 +25,11 @@
 
 #### 图片预览
 
-1. ![只有我自己呀](readme_1.png)
+![只有我自己呀](readme_1.png)
 
-   ![readme_2](readme_2.png)
+![readme_2](readme_2.png)
+
+![](readme_3.png)
 
 #### 码云特技
 
