@@ -102,7 +102,7 @@ float* F_Controller::myFindRoad(DisplayVex vexs[],DisplayEdge edge[], int st, in
     float mytime = 0.0;
     if(!myGraph.getWay(st,ed)){
         if(!isFindAllRoad)
-            this->view->onShowTML("请驾车","请驾车","请驾车");
+            this->view->onShowTML("无法到达","无法到达","无法到达");
     } else {
         if(!isFindAllRoad){
             int pre = ed, now = ed;

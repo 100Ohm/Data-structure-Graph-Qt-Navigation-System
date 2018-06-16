@@ -1,11 +1,14 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "dialog.h"
+#include <QMessageBox>
 #include <QSqlRelationalDelegate>
 #include <QCompleter>
 #include <QPainter>
 #include <QMouseEvent>
 #include <QDebug>
 #include <QTimer>
+#include <QTime>
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -37,10 +40,6 @@ MainWindow::MainWindow(QWidget *parent) :
     tablemodel->setHeaderData(0, Qt::Horizontal, QObject::tr("地点名称"));
     tablemodel->setHeaderData(1, Qt::Horizontal, QObject::tr("地点类型"));
     ui->tableView->setModel(tablemodel);
-//    QTableView *view = new QTableView(this);
-//    view->setModel(model);
-//    setCentralWidget(view);
-//    view->setItemDelegate(new QSqlRelationalDelegate(view));
 }
 
 MainWindow::~MainWindow()
@@ -207,8 +206,8 @@ void MainWindow::initComboBoxItem(){
 
     ui->comboBox_3->addItem("不限制");
     ui->comboBox_3->addItem("5km以内");
-    ui->comboBox_3->addItem("5km-10km");
-    ui->comboBox_3->addItem("10km以上");
+    ui->comboBox_3->addItem("10km以内");
+    ui->comboBox_3->addItem("20km以内");
 
     ui->comboBox_4->addItem("不限制");
     ui->comboBox_4->addItem("5星及以上");
@@ -222,8 +221,8 @@ void MainWindow::initComboBoxItem(){
 
     ui->comboBox_6->addItem("不限制");
     ui->comboBox_6->addItem("5km以内");
-    ui->comboBox_6->addItem("5km-10km");
-    ui->comboBox_6->addItem("10km以上");
+    ui->comboBox_6->addItem("10km以内");
+    ui->comboBox_6->addItem("20km以内");
 
     ui->comboBox_7->addItem("不限制");
     ui->comboBox_7->addItem("5星及以上");
@@ -232,8 +231,8 @@ void MainWindow::initComboBoxItem(){
 
     ui->comboBox_8->addItem("不限制");
     ui->comboBox_8->addItem("5km以内");
-    ui->comboBox_8->addItem("5km-10km");
-    ui->comboBox_8->addItem("10km以上");
+    ui->comboBox_8->addItem("10km以内");
+    ui->comboBox_8->addItem("20km以内");
 
     ui->comboBox_9->addItem("不限制");
     ui->comboBox_9->addItem("5星及以上");
@@ -344,8 +343,8 @@ void MainWindow::onShowTML(QString time, QString money, QString light){
     ui->label_20->setText(time);
     ui->label_21->setText(money);
     ui->label_22->setText(light);
-    if(time == "请驾车"){
-        ui->statusBar->showMessage("行人不可通过高速路,请选择驾车",2000);
+    if(time == "无法到达"){
+        ui->statusBar->showMessage("当前方案无路可到达选定地点,可尝试选择驾车方案",2000);
     }
     if(time == "堵车太严重了"){
         ui->statusBar->showMessage("堵车太严重了,根本走不动,换条路试试",2000);
@@ -356,6 +355,9 @@ void MainWindow::onShowTML(QString time, QString money, QString light){
 void MainWindow::on_pushButton_clicked()
 {//开始导航按钮
     on_comboBox_2_activated(ui->comboBox_2->currentText());
+    ui->label_2->setText(ui->lineEdit_2->text());
+    ui->lineEdit_2->clear();
+    focusNextChild();
 }
 
 void MainWindow::on_lineEdit_2_returnPressed()
@@ -367,13 +369,13 @@ void MainWindow::on_pushButton_2_clicked()
 {//美食,设置请求码
     int dis = 0, score = 0, money = 0;
     if(ui->comboBox_3->currentText() == "不限制"){
-        dis = 0;
+        dis = INF;
     } else if(ui->comboBox_3->currentText() == "5km以内"){
         dis = 5;
-    } else if(ui->comboBox_3->currentText() == "5km-10km"){
-        dis = 6;
-    } else if(ui->comboBox_3->currentText() == "10km以上"){
+    } else if(ui->comboBox_3->currentText() == "10km以内"){
         dis = 10;
+    } else if(ui->comboBox_3->currentText() == "20km以内"){
+        dis = 20;
     }
 
     if(ui->comboBox_4->currentText() == "不限制"){
@@ -403,13 +405,13 @@ void MainWindow::on_pushButton_4_clicked()
     int dis = 0, score = 0;
     bool open = true;
     if(ui->comboBox_6->currentText() == "不限制"){
-        dis = 0;
+        dis = INF;
     } else if(ui->comboBox_6->currentText() == "5km以内"){
         dis = 5;
-    } else if(ui->comboBox_6->currentText() == "5km-10km"){
-        dis = 6;
-    } else if(ui->comboBox_6->currentText() == "10km以上"){
+    } else if(ui->comboBox_6->currentText() == "10km以内"){
         dis = 10;
+    } else if(ui->comboBox_6->currentText() == "20km以内"){
+        dis = 20;
     }
 
     if(ui->comboBox_7->currentText() == "不限制"){
@@ -434,13 +436,13 @@ void MainWindow::on_pushButton_6_clicked()
 {//酒店,设置请求码
     int dis = 0, score = 0, money = 0;
     if(ui->comboBox_8->currentText() == "不限制"){
-        dis = 0;
+        dis = INF;
     } else if(ui->comboBox_8->currentText() == "5km以内"){
         dis = 5;
-    } else if(ui->comboBox_8->currentText() == "5km-10km"){
-        dis = 6;
-    } else if(ui->comboBox_8->currentText() == "10km以上"){
+    } else if(ui->comboBox_8->currentText() == "10km以内"){
         dis = 10;
+    } else if(ui->comboBox_8->currentText() == "20km以内"){
+        dis = 20;
     }
     if(ui->comboBox_9->currentText() == "不限制"){
         score = 0;
@@ -465,26 +467,65 @@ void MainWindow::on_pushButton_6_clicked()
 }
 
 void MainWindow::searchFood(int dis, int score, int money){
-
+    float *allRoad = this->f_ctrl->FindAllRoad(ui->label_2->text(),vexs,edges,vNum,eNum);
+    QString str = "vexId in (0";
+    for(int n = 0; n < vNum; n ++){//组织查询语句
+        if(allRoad[n] < dis){
+            str.append(QString(",'%1'").arg(vexs[n].id));
+        }
+    }
+    str.append(") ");//把前面的语句括起来..
+    free(allRoad);//释放内存,防止内存泄露
     tablemodel->setTable("food");
     tablemodel->setRelation(1, QSqlRelation("vex", "id", "vexName"));
+    switch (money) {//没错,还是组织查询语句,好长的语句
+    case 50:
+        tablemodel->setFilter(str.append(QString("and score >= '%1' and money <= %2").arg(score).arg(money)));
+        break;
+    case 51:
+        tablemodel->setFilter(str.append(QString("and score >= '%1' and (money <= 100 and money >= 50)").arg(score)));
+        break;
+    case 100:
+        tablemodel->setFilter(str.append(QString("and score >= '%1' and money >= 100").arg(score)));
+        break;
+    case 0:
+        tablemodel->setFilter(str.append(QString("and score >= '%1'").arg(score)));
+        break;
+    default:
+        break;
+    }
+    qDebug() << str;//输出一下查询语句(范围大的话会很长很长)
+    tablemodel->setFilter(str);
     tablemodel->select();
     tablemodel->removeColumn(0);
     tablemodel->setHeaderData(0, Qt::Horizontal, QObject::tr("美食店名称"));
     tablemodel->setHeaderData(1, Qt::Horizontal, QObject::tr("用户评分"));
     tablemodel->setHeaderData(2, Qt::Horizontal, QObject::tr("人均消费(元)"));
     tablemodel->setHeaderData(3, Qt::Horizontal, QObject::tr("用户评价"));
-    float *allRoad = this->f_ctrl->FindAllRoad(ui->label_2->text(),vexs,edges,vNum,eNum);
-    for(int n = 0; n < vNum; n ++){
-        qDebug() << allRoad[n];
-    }
-    free(allRoad);
+    ui->tableView->setItemDelegate(new QSqlRelationalDelegate(ui->tableView));
+
 }
 
 void MainWindow::searchSupermarket(int dis, int score, bool open){
-
+    float *allRoad = this->f_ctrl->FindAllRoad(ui->label_2->text(),vexs,edges,vNum,eNum);
+    QString str = "vexId in (0";
+    for(int n = 0; n < vNum; n ++){//组织查询语句
+        if(allRoad[n] < dis){
+            str.append(QString(",'%1'").arg(vexs[n].id));
+        }
+    }
+    str.append(") ");//把前面的语句括起来..
+    free(allRoad);//释放内存,防止内存泄露
     tablemodel->setTable("supermarket");
     tablemodel->setRelation(1, QSqlRelation("vex", "id", "vexName"));
+    if(open){
+        QTime current_time =QTime::currentTime();
+        int hour = current_time.hour();//当前的小时
+        tablemodel->setFilter(str.append(QString("and score >= '%1' and (open <= '%2' and close >= '%2')").arg(score).arg(hour)));
+    }else{
+        tablemodel->setFilter(str.append(QString("and score >= '%1'").arg(score)));
+    }
+    qDebug() << str;//输出一下查询语句(范围大的话会很长很长)
     tablemodel->select();
     tablemodel->removeColumn(0);
     tablemodel->setHeaderData(0, Qt::Horizontal, QObject::tr("超市名称"));
@@ -492,26 +533,64 @@ void MainWindow::searchSupermarket(int dis, int score, bool open){
     tablemodel->setHeaderData(2, Qt::Horizontal, QObject::tr("开店时间"));
     tablemodel->setHeaderData(3, Qt::Horizontal, QObject::tr("关店时间"));
     tablemodel->setHeaderData(4, Qt::Horizontal, QObject::tr("用户评价"));
-    float *allRoad = this->f_ctrl->FindAllRoad(ui->label_2->text(),vexs,edges,vNum,eNum);
-    for(int n = 0; n < vNum; n ++){
-        qDebug() << allRoad[n];
-    }
-    free(allRoad);
+    ui->tableView->setItemDelegate(new QSqlRelationalDelegate(ui->tableView));
 }
 
 void MainWindow::searchHotel(int dis, int score, int money){
-
+    float *allRoad = this->f_ctrl->FindAllRoad(ui->label_2->text(),vexs,edges,vNum,eNum);
+    QString str = "vexId in (0";
+    for(int n = 0; n < vNum; n ++){//组织查询语句
+        if(allRoad[n] < dis){
+            str.append(QString(",'%1'").arg(vexs[n].id));
+        }
+    }
+    str.append(") ");//把前面的语句括起来..
+    free(allRoad);//释放内存,防止内存泄露
     tablemodel->setTable("hotel");
     tablemodel->setRelation(1, QSqlRelation("vex", "id", "vexName"));
+    switch (money) {
+    case 500:
+        tablemodel->setFilter(str.append(QString("and score >= '%1' and money <= %2").arg(score).arg(money)));
+        break;
+    case 501:
+        tablemodel->setFilter(str.append(QString("and score >= '%1' and (money <= 1000 and money >= 500)").arg(score)));
+        break;
+    case 1000:
+        tablemodel->setFilter(str.append(QString("and score >= '%1' and money >= 1000").arg(score)));
+        break;
+    case 0:
+        tablemodel->setFilter(str.append(QString(" and score >= '%1'").arg(score)));
+        break;
+    default:
+        break;
+    }
+    qDebug() << str;//输出一下查询语句(范围大的话会很长很长)
     tablemodel->select();
     tablemodel->removeColumn(0);
     tablemodel->setHeaderData(0, Qt::Horizontal, QObject::tr("酒店名称"));
     tablemodel->setHeaderData(1, Qt::Horizontal, QObject::tr("用户评分"));
     tablemodel->setHeaderData(2, Qt::Horizontal, QObject::tr("住店价格(天)"));
     tablemodel->setHeaderData(3, Qt::Horizontal, QObject::tr("用户评价"));
-    float *allRoad = this->f_ctrl->FindAllRoad(ui->label_2->text(),vexs,edges,vNum,eNum);
-    for(int n = 0; n < vNum; n ++){
-        qDebug() << allRoad[n];
-    }
-    free(allRoad);
+    ui->tableView->setItemDelegate(new QSqlRelationalDelegate(ui->tableView));
+}
+
+void MainWindow::on_action_triggered()
+{
+    Dialog d(0);
+    d.exec();
+    this->n_ctrl->loadDisplayData();
+}
+
+void MainWindow::on_action_2_triggered()
+{
+    Dialog d(1);
+    d.exec();
+    this->n_ctrl->loadDisplayData();
+}
+
+void MainWindow::on_action_3_triggered()
+{
+    QMessageBox box;
+    box.setText("开发者:邓芷倩\n微信:loveyou100Ohm");
+    box.exec();
 }

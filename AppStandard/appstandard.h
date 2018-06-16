@@ -3,6 +3,7 @@
 
 #include "appstandard_global.h"
 #include <QString>
+#include <QSqlDatabase>
 
 #define EDGE_COLOR_0 0 //平时颜色
 #define EDGE_COLOR_1 1 //查找到路径的颜色
@@ -14,10 +15,19 @@
 #define MAX_VEX_NUM 64 //地点数目最大值
 #define INF 65535 //道路长度最大值
 
-static QString databaseName = "myGraph.db";//数据库名称
-
 class APPSTANDARDSHARED_EXPORT AppStandard
 {
+public:
+//    static QString *databaseName;
+//    static QSqlDatabase *db;
+//    static bool mylinkDatabase(){
+//        *db = QSqlDatabase::addDatabase("QSQLITE");
+//        db->setDatabaseName(*databaseName);
+//        if (!db->open()) {
+//            return false;
+//        }
+//        return true;
+//    }
 };
 
 #endif // APPSTANDARD_H

@@ -80,8 +80,8 @@
      <rect>
       <x>660</x>
       <y>20</y>
-      <width>54</width>
-      <height>12</height>
+      <width>101</width>
+      <height>16</height>
      </rect>
     </property>
     <property name="text">
@@ -160,14 +160,14 @@
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>650</x>
+      <x>634</x>
       <y>140</y>
-      <width>75</width>
+      <width>101</width>
       <height>23</height>
      </rect>
     </property>
     <property name="text">
-     <string>开始导航</string>
+     <string>前往目的地</string>
     </property>
    </widget>
    <widget class="Line" name="line">
@@ -574,44 +574,21 @@
      <height>23</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu">
-    <property name="title">
-     <string>添加</string>
-    </property>
-    <addaction name="add_road"/>
-    <addaction name="add_vex"/>
-   </widget>
-   <widget class="QMenu" name="menu_2">
-    <property name="title">
-     <string>删除</string>
-    </property>
-    <addaction name="del_road"/>
-    <addaction name="del_vex"/>
-   </widget>
-   <widget class="QMenu" name="menu_4">
-    <property name="title">
-     <string>地图</string>
-    </property>
-    <addaction name="open_map"/>
-    <addaction name="save_map"/>
-   </widget>
    <widget class="QMenu" name="menu_3">
     <property name="title">
-     <string>游玩方案</string>
+     <string>编辑地图</string>
     </property>
-    <addaction name="travel_guides"/>
+    <addaction name="action"/>
+    <addaction name="action_2"/>
    </widget>
    <widget class="QMenu" name="menu_5">
     <property name="title">
-     <string>查询</string>
+     <string>关于开发者</string>
     </property>
-    <addaction name="find_vex"/>
+    <addaction name="action_3"/>
    </widget>
-   <addaction name="menu_4"/>
-   <addaction name="menu"/>
-   <addaction name="menu_2"/>
-   <addaction name="menu_5"/>
    <addaction name="menu_3"/>
+   <addaction name="menu_5"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="sizePolicy">
@@ -626,56 +603,24 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="add_road"/>
-   <addaction name="del_road"/>
-   <addaction name="add_vex"/>
-   <addaction name="del_vex"/>
-   <addaction name="find_vex"/>
-   <addaction name="travel_guides"/>
    <addaction name="separator"/>
+   <addaction name="action"/>
+   <addaction name="action_2"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="add_road">
+  <action name="action">
    <property name="text">
-    <string>添加道路</string>
+    <string>编辑地点</string>
    </property>
   </action>
-  <action name="add_vex">
+  <action name="action_2">
    <property name="text">
-    <string>添加地点</string>
+    <string>编辑道路</string>
    </property>
   </action>
-  <action name="del_road">
+  <action name="action_3">
    <property name="text">
-    <string>删除道路</string>
-   </property>
-  </action>
-  <action name="del_vex">
-   <property name="text">
-    <string>删除地点</string>
-   </property>
-  </action>
-  <action name="open_map">
-   <property name="text">
-    <string>打开地图数据</string>
-   </property>
-  </action>
-  <action name="save_map">
-   <property name="text">
-    <string>地图数据另存为</string>
-   </property>
-  </action>
-  <action name="travel_guides">
-   <property name="text">
-    <string>定制游玩方案</string>
-   </property>
-  </action>
-  <action name="find_vex">
-   <property name="text">
-    <string>查找地点</string>
-   </property>
-   <property name="toolTip">
-    <string>查找地点</string>
+    <string>关于开发者</string>
    </property>
   </action>
  </widget>
@@ -683,10 +628,10 @@
  <tabstops>
   <tabstop>lineEdit_1</tabstop>
   <tabstop>pushButton_3</tabstop>
-  <tabstop>lineEdit_2</tabstop>
   <tabstop>comboBox</tabstop>
   <tabstop>comboBox_2</tabstop>
   <tabstop>pushButton</tabstop>
+  <tabstop>lineEdit_2</tabstop>
   <tabstop>tabWidget</tabstop>
   <tabstop>comboBox_3</tabstop>
   <tabstop>comboBox_4</tabstop>
@@ -696,6 +641,7 @@
   <tabstop>comboBox_7</tabstop>
   <tabstop>checkBox</tabstop>
   <tabstop>pushButton_4</tabstop>
+  <tabstop>comboBox_8</tabstop>
   <tabstop>comboBox_9</tabstop>
   <tabstop>comboBox_10</tabstop>
   <tabstop>pushButton_6</tabstop>

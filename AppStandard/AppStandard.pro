@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       -= gui
+QT       += sql
 
 TARGET = AppStandard
 TEMPLATE = lib

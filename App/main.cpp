@@ -18,8 +18,10 @@ int main(int argc, char *argv[])
     a.setPalette(myPalette);
 
     //打开数据库
+//    AppStandard::databaseName = new QString("myGraph.db");
     if(!mylinkDatabase())
         exit(1);
+    //新建主窗口
     MainWindow w;
     //通常显示
     N_Controller nc(&w);

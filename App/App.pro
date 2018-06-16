@@ -14,12 +14,15 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    dialog.cpp
 
 HEADERS  += mainwindow.h \
-    connection.h
+    connection.h \
+    dialog.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    dialog.ui
 
 RC_ICONS += mainico.ico \
 
