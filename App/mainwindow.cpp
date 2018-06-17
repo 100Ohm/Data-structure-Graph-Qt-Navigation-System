@@ -355,8 +355,10 @@ void MainWindow::onShowTML(QString time, QString money, QString light){
 void MainWindow::on_pushButton_clicked()
 {//开始导航按钮
     on_comboBox_2_activated(ui->comboBox_2->currentText());
-    ui->label_2->setText(ui->lineEdit_2->text());
-    ui->lineEdit_2->clear();
+    if(ui->lineEdit_2->text() != ""){
+        ui->label_2->setText(ui->lineEdit_2->text());
+        ui->lineEdit_2->clear();
+    }
     focusNextChild();
 }
 
