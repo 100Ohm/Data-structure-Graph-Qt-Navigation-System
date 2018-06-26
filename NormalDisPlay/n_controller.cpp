@@ -46,3 +46,7 @@ void N_Controller::onTimer(){
     }
     this->view->onChangeK(this->k);
 }
+
+void N_Controller::changeVexXY(int id, QPoint p){
+    this->model->changeXY(id, p.x(), p.y());
+}

@@ -25,8 +25,8 @@ void N_Model::loadDisplayVexAndEdge(){
     while(query.next() && v < MAX_VEX_NUM){
         vexs[v].id = query.value(0).toInt();//确定该点id
         vexs[v].name = query.value(1).toString();
-        vexs[v].p.setX((int)(query.value(2).toInt() * 0.7) + 10);
-        vexs[v].p.setY((int)(query.value(3).toInt() * 0.7) + 100);
+        vexs[v].p.setX(query.value(2).toInt());
+        vexs[v].p.setY(query.value(3).toInt());
         v ++;
     }
 
@@ -114,4 +114,21 @@ QString N_Model::vexToString(int vNum){
         n ++;
     }
     return str;
+}
+
+void N_Model::changeXY(int id, int x, int y){
+    QSqlQuery sql_query;
+    QString update_sql = "update vex set x = :x , y = :y where id = :id";
+    sql_query.prepare(update_sql);
+    sql_query.bindValue(":x", x);
+    sql_query.bindValue(":y", y);
+    sql_query.bindValue(":id", id);
+    if(!sql_query.exec())
+    {
+        qDebug()<<"error";
+    }
+    else
+    {
+        qDebug()<<"updated!";
+    }
 }

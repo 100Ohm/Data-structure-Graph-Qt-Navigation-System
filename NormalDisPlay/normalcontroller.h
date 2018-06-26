@@ -21,6 +21,8 @@ public:
     virtual QString vexToString(int vNum) = 0;
     //view里面计时器跳动时通知controller
     virtual void onTimer() = 0;
+    //拖曳改变了点的x和y时
+    virtual void changeVexXY(int id, QPoint p) = 0;
 
     //面向View或Model
     //需要堵塞系数的个数改变

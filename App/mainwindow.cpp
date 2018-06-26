@@ -134,17 +134,39 @@ void  MainWindow::paintEvent(QPaintEvent* event)
 
 void MainWindow::mousePressEvent(QMouseEvent *event){//鼠标按下事件
     QPoint pos = event->pos();
+    m_currentVex = -1;
     for(int i = 0; i < this->vNum; i++){
         int dx = pos.x() - this->vexs[i].p.x();
         int dy = pos.y() - this->vexs[i].p.y();
         int dist = sqrt(dx*dx+dy*dy);
         if(dist < 12){
+            m_currentVex = i;
             QString str = this->n_ctrl->vexToString(vexs[i].id);
             ui->statusBar->showMessage(str,2000);//显示信息
             ui->lineEdit_2->setText(this->vexs[i].name);
             break;
         }
     }
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *event)
+{
+
+    if(m_currentVex == -1)
+        return;
+
+    vexs[m_currentVex].p = event->pos();
+
+    update();
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent *event)
+{
+    if(m_currentVex != -1){
+        vexs[m_currentVex].p = event->pos();
+        this->n_ctrl->changeVexXY(vexs[m_currentVex].id, vexs[m_currentVex].p);
+    }
+    m_currentVex = -1;
 }
 
 void MainWindow::setNormalControll(NormalController *fc){
@@ -354,10 +376,15 @@ void MainWindow::onShowTML(QString time, QString money, QString light){
 
 void MainWindow::on_pushButton_clicked()
 {//开始导航按钮
-    on_comboBox_2_activated(ui->comboBox_2->currentText());
-    if(ui->lineEdit_2->text() != ""){
-        ui->label_2->setText(ui->lineEdit_2->text());
-        ui->lineEdit_2->clear();
+    on_comboBox_2_activated(ui->comboBox_2->currentText());//计算路径
+    if(ui->lineEdit_2->text() != ""){//查找该地点是否存在
+        for(int n = 0; n < vNum; n ++){
+            if(ui->lineEdit_2->text() == this->vexs[n].name){
+                ui->label_2->setText(ui->lineEdit_2->text());//交换地点
+                ui->lineEdit_2->clear();
+                break;
+            }
+        }
     }
     focusNextChild();
 }

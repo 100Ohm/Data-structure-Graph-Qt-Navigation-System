@@ -26,6 +26,8 @@ public:
     void onVexNameChange(const QStringList strList);
     //计时器通知
     void onTimer();
+    //拖曳改变了xy
+    void changeVexXY(int id, QPoint p) ;
 private:
     NormalDisPlay *view = NULL;
     NormalModel *model = NULL;

@@ -14,6 +14,8 @@ public:
     void loadDisplayData();
     //获取某一个地点的语言描述
     QString vexToString(int vNum);
+    //改变某一个点的xy
+    void changeXY(int id, int x, int y);
     N_Model(NormalController *c);
 private:
     NormalController *c = NULL;

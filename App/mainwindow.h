@@ -42,6 +42,7 @@ private:
     void initComboBoxItem();                          //初始化各个选择框的选项
 
 private:
+    int m_currentVex = -1;
     int vNum = 0, eNum = 0;                             //边和点的数目
     DisplayEdge edges[MAX_EDGE_NUM];      //显示边集
     DisplayVex vexs[MAX_VEX_NUM];           //显示点集
@@ -56,6 +57,8 @@ private:
 protected:
     void paintEvent(QPaintEvent* event);                //绘制地图的函数
     void mousePressEvent(QMouseEvent *event);   //鼠标按下事件
+    void mouseMoveEvent(QMouseEvent *event);    //鼠标移动
+    void mouseReleaseEvent(QMouseEvent *event); //鼠标释放
 
 private slots://按钮响应
     void mytimer();

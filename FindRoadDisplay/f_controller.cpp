@@ -32,7 +32,7 @@ float* F_Controller::FindAllRoad(QString st, DisplayVex vexs[],DisplayEdge edge[
 float* F_Controller::analyze(QString st, QString ed, QString way, QString plan,
         DisplayVex vexs[],DisplayEdge edge[], int v, int e){//做一些准备工作
     float *allRoad;
-    int start, end;
+    int start = 0, end = 0;
     bool error = false;
     if(st != ed) {
         for(int n = 0; n < v; n ++){//找名字
@@ -46,7 +46,8 @@ float* F_Controller::analyze(QString st, QString ed, QString way, QString plan,
         this->view->onShowTML("无","无","无");
         error = true;
     }
-    if(error){//如果名字异常
+    if(error || start == 0 || end == 0){//如果名字异常
+        this->view->onShowTML("无法到达","无法到达","无法到达");
         allRoad = (float *) malloc(v * sizeof(float));
         for(int n = 0; n < v; n ++){
             allRoad[n] = INF;

@@ -11,6 +11,8 @@ public:
     virtual void loadDisplayData() = 0;
     //获取某一个地点的语言描述
     virtual QString vexToString(int vNum) = 0;
+    //改变某个点的坐标
+    virtual void changeXY(int id, int x, int y) = 0;
     NormalModel();
 };
 
