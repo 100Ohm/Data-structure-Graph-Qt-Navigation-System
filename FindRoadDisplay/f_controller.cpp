@@ -22,23 +22,23 @@ void F_Controller::FindRoad(QString st, QString ed, QString way, QString plan,
 
 float* F_Controller::FindAllRoad(QString st, DisplayVex vexs[],DisplayEdge edge[], int v, int e){
     isFindAllRoad = true;
-    if(st.compare(QString::fromLocal8Bit("君子兰桥"))){
-        return analyze(st, "桂花宾馆", "驾车", "距离最短", vexs, edge, v, e);
+    if(st == "君子兰桥"){
+        return analyze(st, QString("桂花宾馆"), "驾车", "距离最短", vexs, edge, v, e);
     } else {
-        return analyze(st, "君子兰桥", "驾车", "距离最短", vexs, edge, v, e);
+        return analyze(st, QString("君子兰桥"), "驾车", "距离最短", vexs, edge, v, e);
     }
 }
 
 float* F_Controller::analyze(QString st, QString ed, QString way, QString plan,
         DisplayVex vexs[],DisplayEdge edge[], int v, int e){//做一些准备工作
     float *allRoad;
-    int start = 0, end = 0;
+    int start = -1, end = -1;
     bool error = false;
     if(st != ed) {
         for(int n = 0; n < v; n ++){//找名字
-            if(vexs[n].name.compare(st)){
+            if(vexs[n].name.compare(st) == 0){
                 start = n;
-            }else if(vexs[n].name.compare(ed)){
+            }else if(vexs[n].name == ed){
                 end = n;
             }
         }
@@ -46,7 +46,7 @@ float* F_Controller::analyze(QString st, QString ed, QString way, QString plan,
         this->view->onShowTML("无","无","无");
         error = true;
     }
-    if(error || start == 0 || end == 0){//如果名字异常
+    if(error || start == -1 || end == -1){//如果名字异常
         this->view->onShowTML("无法到达","无法到达","无法到达");
         allRoad = (float *) malloc(v * sizeof(float));
         for(int n = 0; n < v; n ++){
