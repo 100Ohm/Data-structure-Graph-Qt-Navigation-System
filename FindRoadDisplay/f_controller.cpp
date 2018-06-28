@@ -22,7 +22,7 @@ void F_Controller::FindRoad(QString st, QString ed, QString way, QString plan,
 
 float* F_Controller::FindAllRoad(QString st, DisplayVex vexs[],DisplayEdge edge[], int v, int e){
     isFindAllRoad = true;
-    if(st == "君子兰桥"){
+    if(st.compare(QString::fromLocal8Bit("君子兰桥"))){
         return analyze(st, "桂花宾馆", "驾车", "距离最短", vexs, edge, v, e);
     } else {
         return analyze(st, "君子兰桥", "驾车", "距离最短", vexs, edge, v, e);
@@ -36,9 +36,9 @@ float* F_Controller::analyze(QString st, QString ed, QString way, QString plan,
     bool error = false;
     if(st != ed) {
         for(int n = 0; n < v; n ++){//找名字
-            if(vexs[n].name == st){
+            if(vexs[n].name.compare(st)){
                 start = n;
-            }else if(vexs[n].name == ed){
+            }else if(vexs[n].name.compare(ed)){
                 end = n;
             }
         }
